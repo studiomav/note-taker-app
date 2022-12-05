@@ -1,7 +1,9 @@
 const express = require('express');
+const { v4: uuidv4 } = require('uuid');
 const fs = require('fs');
 const app = express();
 const path = require('path');
+const { delimiter } = require('path');
 const port = 8080;
 
 app.use(express.static('public'));
@@ -15,9 +17,20 @@ function saveDb()
   fs.writeFileSync('./db/db.json', JSON.stringify(dbjson));
 }
 
+//saves new note to the json db
 function saveNote(note)
 {
+  note.id = uuidv4();
   dbjson.push(note);
+  saveDb();
+}
+
+//deletes a note from the json db
+function delNote(delId)
+{
+  console.log(dbjson);
+  dbjson = dbjson.filter(element => element.id != delId);
+  console.log(dbjson);
   saveDb();
 }
 
@@ -44,6 +57,14 @@ app.get('*', (req, res) =>
 app.post('/api/notes', (req, res) =>
 {
   saveNote(req.body);
+  res.end();
+});
+
+app.delete('/api/notes/*', (req, res) =>
+{
+  const delId = req.params[0];
+  console.log(`We got a delete request for ${delId}, running deletion now`);
+  delNote(delId);
   res.end();
 });
 
