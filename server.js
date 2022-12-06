@@ -4,7 +4,7 @@ const fs = require('fs');
 const app = express();
 const path = require('path');
 const { delimiter } = require('path');
-const port = 80;
+const port = process.env.PORT || 80;
 
 app.use(express.static('public'));
 app.use(express.json());
